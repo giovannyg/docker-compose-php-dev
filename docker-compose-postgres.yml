@@ -1,11 +1,11 @@
 version: '3.7'
 services:
   apache:
+    container_name: '${PROJECT_NAME}_backend_apache'
     build: './apache'
     restart: always
     ports: 
       - 80:80
-      - 443:443
     volumes:
       - ./public_html:/usr/local/apache2/htdocs
     depends_on:
@@ -13,6 +13,7 @@ services:
       - postgres
 
   php:
+    container_name: '${PROJECT_NAME}_backend_php'
     build:
       context: './php'
       args:
@@ -28,6 +29,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   composer:
+    container_name: '${PROJECT_NAME}_backend_composer'
     build:
       context: './composer'
       args:
@@ -41,6 +43,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
+    container_name: '${PROJECT_NAME}_backend_npm'
     image: node:14.17
     volumes:
       - ./public_html:/usr/local/apache2/htdocs
@@ -51,6 +54,7 @@ services:
     entrypoint: ['npm']
 
   artisan:
+    container_name: '${PROJECT_NAME}_backend_artisan'
     build:
       context: './php'
     volumes:
@@ -62,6 +66,7 @@ services:
     user: ${PHP_USER}
 
   postgres:
+    container_name: '${PROJECT_NAME}_backend_pgsql'
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
     build: './postgres'

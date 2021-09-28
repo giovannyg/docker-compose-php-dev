@@ -1,15 +1,23 @@
 # docker-compose-lamp
-A lamp stack development environment using docker + docker-compose
+A docker compose configuration to build php web apps
 
-** Alpine images **
+## Images: ##
 
-## Services ##
+- Apache 
+- MySQL
+- PostgreSQL
+- Php
+- Artisan (basically same as php, but with an entrypoint)
+- Composer
+- Npm & node
 
-* Apache 
-	- httpd:2.4.35-alpine
-	- Includes a httpd-vhosts file
-	- DocumentRoot: public_html
-* MySQL
-	- mysql:8.0.13
-* Php
-	- php:7.3-rc-fpm-alpine
+It has two different docker-compose files basically with distinct database configurations (MySQL and PostgreSQL), rename one of those files to ```docker-compose.yml``` depending on which database you're gonna use.
+
+As this configuration has entrypoints for composer, npm and artisan to easily run commands from host machine using docker-compose, i.e:
+
+```
+docker-compose run composer install
+docker-compose artisan make:controller
+docker-compose npm install
+docker-compose npm run watch
+```

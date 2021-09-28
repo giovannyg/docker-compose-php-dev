@@ -1,0 +1,4 @@
+database
+postgres_data
+public_html/
+.env

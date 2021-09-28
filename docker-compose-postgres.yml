@@ -1,0 +1,74 @@
+version: '3.7'
+services:
+  apache:
+    build: './apache'
+    restart: always
+    ports: 
+      - 80:80
+      - 443:443
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+      - postgres
+
+  php:
+    build:
+      context: './php'
+      args:
+        - INSTALL_ELASTIC_SEARCH=${PHP_INSTALL_ELASTIC_SEARCH}
+        - INSTALL_COMPOSER=${PHP_INSTALL_COMPOSER}
+        - INSTALL_PDO_SQLSRV=${PHP_INSTALL_PDO_SQLSRV}
+        - PHPUSER=${PHP_USER}
+        - PHPGROUP=${PHP_GROUP:-1000}
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+      - ./tmp:/usr/local/tmp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  composer:
+    build:
+      context: './composer'
+      args:
+        - PHPUSER=${PHP_USER}
+        - PHPGROUP=${PHP_GROUP:-1000}
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+    user: ${PHP_USER}
+    entrypoint: ['composer', '--ignore-platform-reqs']
+
+  npm:
+    image: node:14.17
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    ports:
+      - 3000:3000
+      - 3001:3001
+    working_dir: /usr/local/apache2/htdocs
+    entrypoint: ['npm']
+
+  artisan:
+    build:
+      context: './php'
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    depends_on:
+      - postgres
+    working_dir: /usr/local/apache2/htdocs
+    entrypoint: ['php', '/usr/local/apache2/htdocs/artisan']
+    user: ${PHP_USER}
+
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+    build: './postgres'
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - './postgres_data:/var/lib/postgresql/data'
+
+

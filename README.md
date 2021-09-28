@@ -13,7 +13,7 @@ A docker compose configuration to build php web apps
 
 It has two different docker-compose files basically with distinct database configurations (MySQL and PostgreSQL), rename one of those files to ```docker-compose.yml``` depending on which database you're gonna use.
 
-As this configuration has entrypoints for composer, npm and artisan to easily run commands from host machine using docker-compose, i.e:
+As this configuration has entrypoints for composer, npm and artisan you can easily run commands from host machine using docker-compose, i.e:
 
 ```
 docker-compose run composer install

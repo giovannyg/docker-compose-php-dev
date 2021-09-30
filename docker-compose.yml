@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   apache:
-    container_name: '${PROJECT_NAME}_backend_apache'
+    container_name: '${PROJECT_NAME}_apache'
     build: './apache'
     restart: always
     ports: 
@@ -13,7 +13,7 @@ services:
       - mysql
 
   php:
-    container_name: '${PROJECT_NAME}_backend_php'
+    container_name: '${PROJECT_NAME}_php'
     build:
       context: './php'
       args:
@@ -29,7 +29,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   composer:
-    container_name: '${PROJECT_NAME}_backend_composer'
+    container_name: '${PROJECT_NAME}_composer'
     build:
       context: './composer'
       args:
@@ -43,7 +43,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    container_name: '${PROJECT_NAME}_backend_npm'
+    container_name: '${PROJECT_NAME}_npm'
     image: node:14.17
     volumes:
       - ./public_html:/usr/local/apache2/htdocs
@@ -54,7 +54,7 @@ services:
     entrypoint: ['npm']
 
   artisan:
-    container_name: '${PROJECT_NAME}_backend_artisan'
+    container_name: '${PROJECT_NAME}_artisan'
     build:
       context: './php'
     volumes:
@@ -66,7 +66,7 @@ services:
     user: ${PHP_USER}
 
   mysql:
-    container_name: '${PROJECT_NAME}_backend_mysql'
+    container_name: '${PROJECT_NAME}_mysql'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     build: './mysql'

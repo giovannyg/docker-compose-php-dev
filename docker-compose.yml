@@ -3,7 +3,7 @@ services:
   apache:
     container_name: '${PROJECT_NAME}_apache'
     build: './apache'
-    restart: always
+    restart: unless-stopped
     ports: 
       - 80:80
     volumes:
@@ -14,6 +14,7 @@ services:
 
   php:
     container_name: '${PROJECT_NAME}_php'
+    restart: unless-stopped
     build:
       context: './php'
       args:
@@ -70,7 +71,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     build: './mysql'
-    restart: always
+    restart: unless-stopped
     ports:
       - 3306:3306
     volumes:

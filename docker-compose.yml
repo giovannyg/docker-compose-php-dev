@@ -1,4 +1,9 @@
 version: '3.7'
+networks:
+  databases_dbnet:
+    external: true
+  laravel:
+    driver: bridge
 services:
   apache:
     container_name: '${PROJECT_NAME}_apache'
@@ -10,8 +15,9 @@ services:
       - ./public_html:/usr/local/apache2/htdocs
     depends_on:
       - php
-      - mysql
-
+    networks:
+      - laravel
+    
   php:
     container_name: '${PROJECT_NAME}_php'
     restart: unless-stopped
@@ -28,6 +34,9 @@ services:
       - ./tmp:/usr/local/tmp
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - databases_dbnet
+      - laravel
 
   composer:
     container_name: '${PROJECT_NAME}_composer'
@@ -42,6 +51,8 @@ services:
       - php
     user: ${PHP_USER}
     entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+    - laravel
 
   npm:
     container_name: '${PROJECT_NAME}_npm'
@@ -53,6 +64,8 @@ services:
       - 3001:3001
     working_dir: /usr/local/apache2/htdocs
     entrypoint: ['npm']
+    networks:
+      - laravel
 
   artisan:
     container_name: '${PROJECT_NAME}_artisan'
@@ -60,21 +73,9 @@ services:
       context: './php'
     volumes:
       - ./public_html:/usr/local/apache2/htdocs
-    depends_on:
-      - mysql
     working_dir: /usr/local/apache2/htdocs
     entrypoint: ['php', '/usr/local/apache2/htdocs/artisan']
     user: ${PHP_USER}
-
-  mysql:
-    container_name: '${PROJECT_NAME}_mysql'
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    build: './mysql'
-    restart: unless-stopped
-    ports:
-      - 3306:3306
-    volumes:
-      - ./database:/var/lib/mysql
-
-
+    networks:
+      - databases_dbnet
+      - laravel

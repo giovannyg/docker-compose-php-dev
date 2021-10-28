@@ -27,6 +27,7 @@ services:
         - INSTALL_ELASTIC_SEARCH=${PHP_INSTALL_ELASTIC_SEARCH}
         - INSTALL_COMPOSER=${PHP_INSTALL_COMPOSER}
         - INSTALL_PDO_SQLSRV=${PHP_INSTALL_PDO_SQLSRV}
+        - INSTALL_XDEBUG=${PHP_INSTALL_XDEBUG}
         - PHPUSER=${PHP_USER}
         - PHPGROUP=${PHP_GROUP:-1000}
     volumes:
@@ -50,7 +51,23 @@ services:
     depends_on:
       - php
     user: ${PHP_USER}
-    entrypoint: ['composer', '--ignore-platform-reqs']
+    entrypoint: ['composer']
+    networks:
+    - laravel
+
+  laravel:
+    container_name: '${PROJECT_NAME}_laravel'
+    build:
+      context: './composer'
+      args:
+        - PHPUSER=${PHP_USER}
+        - PHPGROUP=${PHP_GROUP:-1000}
+    volumes:
+      - ./public_html:/usr/local/apache2/htdocs
+    depends_on:
+      - php
+    user: ${PHP_USER}
+    entrypoint: ['laravel']
     networks:
     - laravel
 
@@ -79,3 +96,4 @@ services:
     networks:
       - databases_dbnet
       - laravel
+    

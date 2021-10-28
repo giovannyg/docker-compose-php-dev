@@ -52,12 +52,16 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 ###########################################################################
 # PECL extensions
 ###########################################################################
-RUN pecl install xdebug \
-  && docker-php-ext-enable xdebug
+ARG INSTALL_XDEBUG=false
 
-COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN if [ ${INSTALL_XDEBUG} = true ]; then \
+  pecl install xdebug \
+  && docker-php-ext-enable xdebug \
+;fi
 
-ENV XDEBUG_SESSION=1
+#COPY docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+#ENV XDEBUG_SESSION=1
 ###########################################################################
 # Elastic search
 ###########################################################################

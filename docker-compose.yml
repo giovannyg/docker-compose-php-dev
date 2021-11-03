@@ -96,4 +96,11 @@ services:
     networks:
       - databases_dbnet
       - laravel
-    
+
+  mailhog:
+    container_name: '${PROJECT_NAME}_mailhog'
+    build: './mailhog'
+    ports:
+      - 8025:8025
+    networks:
+      - laravel

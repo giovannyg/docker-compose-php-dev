@@ -1,9 +1,4 @@
 version: '3.7'
-networks:
-  databases_dbnet:
-    external: true
-  laravel:
-    driver: bridge
 services:
   apache:
     container_name: '${PROJECT_NAME}_apache'
@@ -25,7 +20,6 @@ services:
       context: './php'
       args:
         - INSTALL_ELASTIC_SEARCH=${PHP_INSTALL_ELASTIC_SEARCH}
-        - INSTALL_COMPOSER=${PHP_INSTALL_COMPOSER}
         - INSTALL_PDO_SQLSRV=${PHP_INSTALL_PDO_SQLSRV}
         - INSTALL_XDEBUG=${PHP_INSTALL_XDEBUG}
         - PHPUSER=${PHP_USER}
@@ -104,3 +98,8 @@ services:
       - 8025:8025
     networks:
       - laravel
+networks:
+  databases_dbnet:
+    external: true
+  laravel:
+    driver: bridge

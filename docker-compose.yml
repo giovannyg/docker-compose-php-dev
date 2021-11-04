@@ -34,7 +34,7 @@ services:
       - ./public_html:/usr/local/apache2/htdocs
       - ./tmp:/usr/local/tmp
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:${APACHE_CONTAINER_IP}"
     networks:
       - databases_dbnet
       - laravel

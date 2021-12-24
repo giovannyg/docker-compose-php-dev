@@ -33,22 +33,6 @@ services:
       - databases_dbnet
       - laravel
 
-  composer:
-    container_name: '${PROJECT_NAME}_composer'
-    build:
-      context: './composer'
-      args:
-        - PHPUSER=${PHP_USER}
-        - PHPGROUP=${PHP_GROUP:-1000}
-    volumes:
-      - ./src:/usr/local/apache2/htdocs
-    depends_on:
-      - php
-    user: ${PHP_USER}
-    entrypoint: ['composer']
-    networks:
-    - laravel
-
   laravel:
     container_name: '${PROJECT_NAME}_laravel'
     build:

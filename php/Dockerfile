@@ -130,6 +130,11 @@ apt-get update && apt-get install -y gnupg2 \
   #php -v
 
 ###########################################################################
+# Install Composer
+###########################################################################
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+###########################################################################
 # Linux Alias
 ###########################################################################
 RUN echo "alias l='ls -lah'" >> /home/${PHPUSER}/.bashrc >> /root/.bashrc \

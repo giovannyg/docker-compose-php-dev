@@ -144,6 +144,9 @@ RUN echo "alias l='ls -lah'" >> /home/${PHPUSER}/.bashrc >> /root/.bashrc \
     && echo "alias -- -='cd -'" >> /home/${PHPUSER}/.bashrc >> /root/.bashrc \
     && echo "alias -- ..='cd ..'" >> /home/${PHPUSER}/.bashrc >> /root/.bashrc
 
-WORKDIR /usr/local/apache2/htdocs
 
+ENV TZ=America/Mexico_City
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+WORKDIR /usr/local/apache2/htdocs
 

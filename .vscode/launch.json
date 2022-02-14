@@ -12,7 +12,7 @@
             "request": "launch",
             "port": 9003,
             "pathMappings": {
-              "/usr/local/apache2/htdocs": "${workspaceRoot}/public_html",
+              "/usr/local/apache2/htdocs": "${workspaceRoot}/src",
             }
         }
     ]

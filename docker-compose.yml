@@ -1,7 +1,9 @@
 version: '3.7'
 services:
+
   apache:
-    container_name: '${PROJECT_NAME}_apache'
+    image: '${IMAGE_CONTAINER_PREFIX}_apache'
+    container_name: '${IMAGE_CONTAINER_PREFIX}_apache'
     build: './apache'
     restart: unless-stopped
     ports: 
@@ -14,7 +16,8 @@ services:
       - laravel
     
   php:
-    container_name: '${PROJECT_NAME}_php'
+    image: '${IMAGE_CONTAINER_PREFIX}_php'
+    container_name: '${IMAGE_CONTAINER_PREFIX}_php'
     restart: unless-stopped
     build:
       context: './php'
@@ -33,25 +36,10 @@ services:
       - databases_dbnet
       - laravel
 
-  laravel:
-    container_name: '${PROJECT_NAME}_laravel'
-    build:
-      context: './composer'
-      args:
-        - PHPUSER=${PHP_USER}
-        - PHPGROUP=${PHP_GROUP:-1000}
-    volumes:
-      - ./src:/usr/local/apache2/htdocs
-    depends_on:
-      - php
-    user: ${PHP_USER}
-    entrypoint: ['laravel']
-    networks:
-    - laravel
-
   npm:
-    container_name: '${PROJECT_NAME}_npm'
-    image: node:14.17
+    image: '${IMAGE_CONTAINER_PREFIX}_npm'
+    container_name: '${IMAGE_CONTAINER_PREFIX}_npm'
+    build: './node'
     volumes:
       - ./src:/usr/local/apache2/htdocs
     ports:
@@ -62,26 +50,15 @@ services:
     networks:
       - laravel
 
-  artisan:
-    container_name: '${PROJECT_NAME}_artisan'
-    build:
-      context: './php'
-    volumes:
-      - ./src:/usr/local/apache2/htdocs
-    working_dir: /usr/local/apache2/htdocs
-    entrypoint: ['php', '/usr/local/apache2/htdocs/artisan']
-    user: ${PHP_USER}
-    networks:
-      - databases_dbnet
-      - laravel
-
   mailhog:
-    container_name: '${PROJECT_NAME}_mailhog'
+    image: '${IMAGE_CONTAINER_PREFIX}_mailhog'
+    container_name: '${IMAGE_CONTAINER_PREFIX}_mailhog'
     build: './mailhog'
     ports:
       - 8025:8025
     networks:
       - laravel
+
 networks:
   databases_dbnet:
     external: true

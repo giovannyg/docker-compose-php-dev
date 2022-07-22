@@ -1,23 +1,31 @@
 version: '3.7'
 services:
-
-  apache:
-    image: '${IMAGE_CONTAINER_PREFIX}_apache'
-    container_name: '${IMAGE_CONTAINER_PREFIX}_apache'
-    build: './apache'
+  #apache:
+    #container_name: '${PROJECT_NAME}_apache'
+    #build: './apache'
+    #restart: unless-stopped
+    #ports: 
+      #- 80:80
+    #volumes:
+      #- ./src:/usr/share/nginx/html
+    #depends_on:
+      #- php
+    #networks:
+      #- project-name
+  nginx:
+    container_name: '${PROJECT_NAME}_nginx'
+    build: './nginx'
     restart: unless-stopped
     ports: 
       - 80:80
     volumes:
-      - ./src:/usr/local/apache2/htdocs
+      - ./src:/usr/share/nginx/html/
     depends_on:
       - php
     networks:
-      - laravel
-    
+      - project-name
   php:
-    image: '${IMAGE_CONTAINER_PREFIX}_php'
-    container_name: '${IMAGE_CONTAINER_PREFIX}_php'
+    container_name: '${PROJECT_NAME}_php'
     restart: unless-stopped
     build:
       context: './php'
@@ -28,39 +36,66 @@ services:
         - PHPUSER=${PHP_USER}
         - PHPGROUP=${PHP_GROUP:-1000}
     volumes:
-      - ./src:/usr/local/apache2/htdocs
+      - ./src:/usr/share/nginx/html/
       - ./tmp:/usr/local/tmp
     extra_hosts:
       - "host.docker.internal:${APACHE_CONTAINER_IP}"
+      - "project-name.web:${APACHE_CONTAINER_IP}"
     networks:
-      - databases_dbnet
-      - laravel
+      - docker-compose-databases_dbnet
+      - project-name
+
+  laravel:
+    container_name: '${PROJECT_NAME}_laravel'
+    build:
+      context: './composer'
+      args:
+        - PHPUSER=${PHP_USER}
+        - PHPGROUP=${PHP_GROUP:-1000}
+    volumes:
+      - ./src:/usr/share/nginx/html/
+    depends_on:
+      - php
+    user: ${PHP_USER}
+    entrypoint: ['laravel']
+    networks:
+    - project-name
 
   npm:
-    image: '${IMAGE_CONTAINER_PREFIX}_npm'
-    container_name: '${IMAGE_CONTAINER_PREFIX}_npm'
-    build: './node'
+    container_name: '${PROJECT_NAME}_npm'
+    image: node:14.17
     volumes:
-      - ./src:/usr/local/apache2/htdocs
+      - ./src:/usr/share/nginx/html
     ports:
       - 3000:3000
       - 3001:3001
-    working_dir: /usr/local/apache2/htdocs
+    working_dir: /usr/share/nginx/html
     entrypoint: ['npm']
     networks:
-      - laravel
+      - project-name
+
+  artisan:
+    container_name: '${PROJECT_NAME}_artisan'
+    build:
+      context: './php'
+    volumes:
+      - ./src:/usr/share/nginx/html
+    working_dir: /usr/share/nginx/html
+    entrypoint: ['php', '/usr/share/nginx/html/artisan']
+    user: ${PHP_USER}
+    networks:
+      - docker-compose-databases_dbnet
+      - project-name
 
   mailhog:
-    image: '${IMAGE_CONTAINER_PREFIX}_mailhog'
-    container_name: '${IMAGE_CONTAINER_PREFIX}_mailhog'
+    container_name: '${PROJECT_NAME}_mailhog'
     build: './mailhog'
     ports:
       - 8025:8025
     networks:
-      - laravel
-
+      - project-name
 networks:
-  databases_dbnet:
+  docker-compose-databases_dbnet:
     external: true
-  laravel:
+  project-name:
     driver: bridge

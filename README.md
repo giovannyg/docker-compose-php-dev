@@ -3,16 +3,16 @@ A docker compose configuration to build php web apps
 
 ## Images: ##
 
-- Apache 
-- Php
-- Artisan (basically same as php, but with an entrypoint)
-- Composer
-- Npm & node
+- Apache/Nginx
+- php
+- artisan
+- composer
+- node
 
 As this configuration has entrypoints for composer, npm and artisan you can easily run commands from host machine using docker-compose, i.e:
 
 ```
-docker-compose run composer install
+docker-compose run php composer install
 docker-compose run artisan make:controller
 docker-compose run npm install
 docker-compose run npm run watch
